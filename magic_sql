@@ -1,0 +1,17 @@
+1. This will tells you which is the most statement taking time in your db
+
+select substring(query,1,150) as short_query,
+ 		round(total_time::numeric,2) as total_time,
+ 		calls,round(mean_time::numeric,2) as mean,
+ 		round((100*total_time/sum(total_time::numeric)over ())::numeric,2) as percentage_overall
+ 		from pg_stat_statements
+ 		order by total_time desc 
+ 		limit 100;
+ 	
+ 	
+ 2. Below sql will provide which tables are doing sequencial scan and making cause:
+  
+ 	select schemaname, relname, seq_scan, seq_tup_read, idx_scan,seq_tup_read/seq_scan as avg
+ 		from pg_catalog.pg_stat_user_tables
+ 		where seq_scan>0
+ 		order by seq_tup_read desc
